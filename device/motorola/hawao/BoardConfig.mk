@@ -67,8 +67,18 @@ BOARD_MOTOROLA_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext product ve
 
 # System-as-root
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
-BOARD_USES_RECOVERY_AS_BOOT := false
+BOARD_SUPPRESS_SECURE_ERASE := true
+
+# A/B partitions
 AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS += \
+    boot \
+    dtbo \
+    vbmeta \
+    vbmeta_system
+
+# Recovery
+BOARD_USES_RECOVERY_AS_BOOT := false
 
 # File systems
 TARGET_USERIMAGES_USE_EXT4 := true

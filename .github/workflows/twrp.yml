@@ -60,13 +60,6 @@ jobs:
         mkdir -p ~/twrp/device/motorola
         cp -r $GITHUB_WORKSPACE/device-tree/device/motorola/hawao ~/twrp/device/motorola/
         
-    - name: Create vendorsetup
-      run: |
-        cat > ~/twrp/device/motorola/hawao/vendorsetup.sh << 'EOF'
-        add_lunch_combo twrp_hawao-eng
-        EOF
-        chmod +x ~/twrp/device/motorola/hawao/vendorsetup.sh
-        
     - name: Verify device tree
       run: |
         echo "=== Device tree contents ==="
@@ -91,7 +84,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
-        lunch twrp_hawao-eng
+        lunch twrp_hawao-userdebug
         mka recoveryimage -j$(nproc)
         
     - name: Upload recovery image

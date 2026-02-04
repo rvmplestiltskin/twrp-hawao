@@ -1,0 +1,87 @@
+name: Build TWRP for Moto G42
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Checkout device tree
+      uses: actions/checkout@v4
+      with:
+        path: device-tree
+      
+    - name: Setup environment
+      run: |
+        sudo apt update
+        sudo apt install -y bc bison build-essential ccache curl flex \
+          g++-multilib gcc-multilib git gnupg gperf imagemagick \
+          lib32ncurses-dev lib32readline-dev lib32z1-dev libelf-dev \
+          lz4 libncurses6 libncurses-dev libssl-dev \
+          libxml2-dev libxml2-utils lzop pngcrush rsync schedtool squashfs-tools \
+          xsltproc zip zlib1g-dev python3 python-is-python3 openjdk-11-jdk
+        
+    - name: Install repo
+      run: |
+        mkdir -p ~/.bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+        chmod a+rx ~/.bin/repo
+        echo "$HOME/.bin" >> $GITHUB_PATH
+        
+    - name: Initialize TWRP repo
+      run: |
+        mkdir -p ~/twrp
+        cd ~/twrp
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        ~/.bin/repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14.1
+        
+    - name: Create local manifest
+      run: |
+        mkdir -p ~/twrp/.repo/local_manifests
+        cat > ~/twrp/.repo/local_manifests/roomservice.xml << 'MANIFEST'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <manifest>
+            <project name="LineageOS/android_kernel_motorola_sm6225" 
+                     path="kernel/motorola/sm6225" 
+                     remote="github" 
+                     revision="lineage-23.0" />
+        </manifest>
+        MANIFEST
+        
+    - name: Sync repos
+      run: |
+        cd ~/twrp
+        ~/.bin/repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags
+        
+    - name: Copy device tree
+      run: |
+        mkdir -p ~/twrp/device/motorola
+        cp -r device-tree/device/motorola/hawao ~/twrp/device/motorola/
+        
+    - name: Generate kernel defconfig
+      run: |
+        cd ~/twrp/kernel/motorola/sm6225
+        product=hawao
+        cat arch/arm64/configs/vendor/bengal-perf_defconfig \
+            arch/arm64/configs/vendor/ext_config/moto-bengal.config \
+            arch/arm64/configs/vendor/ext_config/${product}-default.config \
+            arch/arm64/configs/vendor/debugfs.config > arch/arm64/configs/${product}_defconfig
+        
+    - name: Build TWRP
+      run: |
+        cd ~/twrp
+        source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
+        export LC_ALL=C
+        lunch twrp_hawao-eng
+        mka recoveryimage -j$(nproc)
+        
+    - name: Upload recovery image
+      uses: actions/upload-artifact@v4
+      with:
+        name: twrp-hawao-recovery
+        path: ~/twrp/out/target/product/hawao/recovery.img
+        retention-days: 30

@@ -26,9 +26,6 @@ on boot
     hostname localhost
     domainname localdomain
 
-on property:sys.powerctl=*
-    powerctl ${sys.powerctl}
-
 service ueventd /system/bin/ueventd
     critical
     seclabel u:r:ueventd:s0

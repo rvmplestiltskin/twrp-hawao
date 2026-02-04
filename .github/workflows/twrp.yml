@@ -28,7 +28,6 @@ jobs:
         mkdir -p ~/.bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
         chmod a+rx ~/.bin/repo
-        echo "$HOME/.bin" >> $GITHUB_PATH
         
     - name: Initialize TWRP repo
       run: |
@@ -59,7 +58,21 @@ jobs:
     - name: Copy device tree
       run: |
         mkdir -p ~/twrp/device/motorola
-        cp -r device-tree/device/motorola/hawao ~/twrp/device/motorola/
+        cp -r $GITHUB_WORKSPACE/device-tree/device/motorola/hawao ~/twrp/device/motorola/
+        
+    - name: Create vendorsetup
+      run: |
+        cat > ~/twrp/device/motorola/hawao/vendorsetup.sh << 'EOF'
+        add_lunch_combo twrp_hawao-eng
+        EOF
+        chmod +x ~/twrp/device/motorola/hawao/vendorsetup.sh
+        
+    - name: Verify device tree
+      run: |
+        echo "=== Device tree contents ==="
+        ls -la ~/twrp/device/motorola/hawao/
+        echo "=== AndroidProducts.mk ==="
+        cat ~/twrp/device/motorola/hawao/AndroidProducts.mk
         
     - name: Generate kernel defconfig
       run: |
@@ -69,6 +82,8 @@ jobs:
             arch/arm64/configs/vendor/ext_config/moto-bengal.config \
             arch/arm64/configs/vendor/ext_config/${product}-default.config \
             arch/arm64/configs/vendor/debugfs.config > arch/arm64/configs/${product}_defconfig
+        echo "=== Defconfig created ==="
+        ls -lh arch/arm64/configs/${product}_defconfig
         
     - name: Build TWRP
       run: |

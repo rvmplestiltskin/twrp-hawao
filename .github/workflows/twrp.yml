@@ -35,7 +35,7 @@ jobs:
         cd ~/twrp
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        ~/.bin/repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14.1
+        ~/.bin/repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
         
     - name: Create local manifest
       run: |
@@ -84,7 +84,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
-        lunch twrp_hawao-userdebug
+        lunch twrp_hawao-eng
         mka recoveryimage -j$(nproc)
         
     - name: Upload recovery image

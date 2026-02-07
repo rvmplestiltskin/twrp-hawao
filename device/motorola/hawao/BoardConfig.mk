@@ -32,45 +32,8 @@ BOARD_AVB_ENABLE := true
 # includes make_f2fs to support userdata partition in f2fs
 TARGET_USERIMAGES_USE_F2FS := true
 
-<<<<<<< HEAD
-# Recovery
-BOARD_USES_RECOVERY_AS_BOOT := false
-TARGET_NO_RECOVERY := false
-BOARD_INCLUDE_RECOVERY_DTBO := true
-TARGET_RECOVERY_DEVICE_DIRS += $(DEVICE_PATH)
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
-BOARD_HAS_NO_SELECT_BUTTON := true
-
-
-TW_LOAD_VENDOR_MODULES := "mmi_annotate.ko mmi_info.ko sensors_class.ko mmi_relay.ko touchscreen_mmi.ko focaltech_v2_mmi.ko"
-# TWRP Configuration
-TW_THEME := portrait_hdpi
-TW_EXTRA_LANGUAGES := true
-#TW_SCREEN_BLANK_ON_BOOT := true
-TW_INPUT_BLACKLIST := "hbtp_vm"
-TW_USE_TOOLBOX := true
-TW_INCLUDE_REPACKTOOLS := true
-TW_INCLUDE_RESETPROP := true
-TW_INCLUDE_NTFS_3G := true
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
-TW_MAX_BRIGHTNESS := 2047
-TW_DEFAULT_BRIGHTNESS := 1200
-TARGET_RECOVERY_QCOM_RTC_FIX := true
-TW_EXCLUDE_DEFAULT_USB_INIT := true
-TW_NO_SCREEN_BLANK := true
-RECOVERY_SDCARD_ON_DATA := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun.%d/file
-
-# Crypto
-TW_INCLUDE_CRYPTO := true
-TW_INCLUDE_CRYPTO_FBE := true
-TW_INCLUDE_FBE_METADATA_DECRYPT := true
-BOARD_USES_QCOM_FBE_DECRYPTION := true
-=======
 # Creates metadata partition mount point under root for
 # the devices with metadata partition
->>>>>>> 907b16b908b47dbdeacd4ae00c246ed6f6fca0b1
 BOARD_USES_METADATA_PARTITION := true
 
 # Workaround for error copying vendor files to recovery ramdisk

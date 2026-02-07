@@ -82,14 +82,7 @@ jobs:
         ls -la ~/twrp/device/motorola/hawao/
         echo "=== AndroidProducts.mk ==="
         cat ~/twrp/device/motorola/hawao/AndroidProducts.mk
-    - name: Setup ccache
-      run: |
-        export USE_CCACHE=1
-        export CCACHE_EXEC=/usr/bin/ccache
-        export CCACHE_DIR=~/twrp/.ccache
-        ccache -M 5G
-        ccache -z
-        
+    
     - name: Build TWRP
       run: |
         cd ~/twrp

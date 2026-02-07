@@ -37,19 +37,6 @@ jobs:
         git config --global user.name "GitHub Action"
         ~/.bin/repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
         
-    - name: Create local manifest
-      run: |
-        mkdir -p ~/twrp/.repo/local_manifests
-        cat > ~/twrp/.repo/local_manifests/roomservice.xml << 'MANIFEST'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <manifest>
-            <project name="LineageOS/android_kernel_motorola_sm6225" 
-                     path="kernel/motorola/sm6225" 
-                     remote="github" 
-                     revision="lineage-23.0" />
-        </manifest>
-        MANIFEST
-        
     - name: Sync repos
       run: |
         cd ~/twrp
@@ -66,17 +53,6 @@ jobs:
         ls -la ~/twrp/device/motorola/hawao/
         echo "=== AndroidProducts.mk ==="
         cat ~/twrp/device/motorola/hawao/AndroidProducts.mk
-        
-    - name: Generate kernel defconfig
-      run: |
-        cd ~/twrp/kernel/motorola/sm6225
-        product=hawao
-        cat arch/arm64/configs/vendor/bengal-perf_defconfig \
-            arch/arm64/configs/vendor/ext_config/moto-bengal.config \
-            arch/arm64/configs/vendor/ext_config/${product}-default.config \
-            arch/arm64/configs/vendor/debugfs.config > arch/arm64/configs/${product}_defconfig
-        echo "=== Defconfig created ==="
-        ls -lh arch/arm64/configs/${product}_defconfig
         
     - name: Build TWRP
       run: |

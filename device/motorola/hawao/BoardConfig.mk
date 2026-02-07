@@ -1,89 +1,38 @@
-DEVICE_PATH := device/motorola/hawao
-
 # Platform
 TARGET_BOARD_PLATFORM := bengal
-TARGET_BOOTLOADER_BOARD_NAME := hawao
+
+# Bootloader
+TARGET_BOOTLOADER_BOARD_NAME := $(PRODUCT_DEVICE)
 
 # Architecture
 TARGET_ARCH := arm64
-TARGET_ARCH_VARIANT := armv8-2a
+TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_VARIANT := generic
-TARGET_CPU_VARIANT_RUNTIME := cortex-a76
 
 TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv8-2a
+TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
-TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a76
 
-# 64-bit support
-TARGET_SUPPORTS_32_BIT_APPS := true
-TARGET_SUPPORTS_64_BIT_APPS := true
-
-# Bootloader
-TARGET_NO_BOOTLOADER := true
-
-# Kernel
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_KERNEL_SOURCE := kernel/motorola/sm6225
-TARGET_KERNEL_CONFIG := hawao_defconfig
-TARGET_KERNEL_CLANG_COMPILE := true
-
-BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200n8
-BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
-BOARD_KERNEL_CMDLINE += androidboot.console=ttyMSM0
-BOARD_KERNEL_CMDLINE += androidboot.memcg=1
-BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1
-BOARD_KERNEL_CMDLINE += msm_rtb.filter=0x237
-BOARD_KERNEL_CMDLINE += service_locator.enable=1
-BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=4e00000.dwc3
-BOARD_KERNEL_CMDLINE += swiotlb=0
-BOARD_KERNEL_CMDLINE += loop.max_part=7
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
-
-BOARD_KERNEL_BASE := 0x00000000
-BOARD_KERNEL_PAGESIZE := 4096
-BOARD_RAMDISK_OFFSET := 0x01000000
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
-BOARD_KERNEL_IMAGE_NAME := Image
-BOARD_BOOT_HEADER_VERSION := 3
-BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
-BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
-BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
-
-# Partitions
-BOARD_FLASH_BLOCK_SIZE := 262144
-BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 104857600
-
-# Dynamic Partitions
-BOARD_SUPER_PARTITION_SIZE := 9126805504
-BOARD_SUPER_PARTITION_GROUPS := motorola_dynamic_partitions
-BOARD_MOTOROLA_DYNAMIC_PARTITIONS_SIZE := 9122611200
-BOARD_MOTOROLA_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext product vendor
-
-# System-as-root
-BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
-BOARD_SUPPRESS_SECURE_ERASE := true
-
-# A/B partitions
+# A/B device flags
+TARGET_NO_RECOVERY := true
+BOARD_USES_RECOVERY_AS_BOOT := true
 AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += \
-    boot \
-    dtbo \
-    vbmeta \
-    vbmeta_system
+AB_OTA_PARTITIONS += system system_ext product vbmeta_system
 
-# File systems
-TARGET_USERIMAGES_USE_EXT4 := true
+# bootimg configuration
+BOARD_BOOT_HEADER_VERSION := 3
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
+BOARD_AVB_ENABLE := true
+
+# includes make_f2fs to support userdata partition in f2fs
 TARGET_USERIMAGES_USE_F2FS := true
-BOARD_HAS_LARGE_FILESYSTEM := true
-TARGET_COPY_OUT_VENDOR := vendor
-TARGET_COPY_OUT_RECOVERY := recovery
 
+<<<<<<< HEAD
 # Recovery
 BOARD_USES_RECOVERY_AS_BOOT := false
 TARGET_NO_RECOVERY := false
@@ -118,15 +67,85 @@ TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 BOARD_USES_QCOM_FBE_DECRYPTION := true
+=======
+# Creates metadata partition mount point under root for
+# the devices with metadata partition
+>>>>>>> 907b16b908b47dbdeacd4ae00c246ed6f6fca0b1
 BOARD_USES_METADATA_PARTITION := true
 
-# Platform version (TWRP 12.1)
-PLATFORM_VERSION := 99
-PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
-PLATFORM_SECURITY_PATCH := 2099-12-31
-VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+# Workaround for error copying vendor files to recovery ramdisk
+TARGET_COPY_OUT_VENDOR := vendor
 
-# Build rules
-BUILD_BROKEN_DUP_RULES := true
+# Adjusted flags for decryption
+PLATFORM_SECURITY_PATCH := 2099-12-31
+VENDOR_SECURITY_PATCH := 2099-12-31
+PLATFORM_VERSION := 99.87.36
+PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
+
+# Recovery
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+
+# Fix for copying *.ko
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-BUILD_BROKEN_MISSING_REQUIRED_MODULES := true
+
+
+##### TWRP Flags #####
+TW_THEME := portrait_hdpi
+
+# Include more languages than English
+TW_EXTRA_LANGUAGES := true
+
+# Brightness
+TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
+TW_DEFAULT_BRIGHTNESS := 1800
+TW_MAX_BRIGHTNESS := 3514
+
+# Add support of able to wake with touch after sleep
+TW_NO_SCREEN_BLANK := true
+
+# Remove vibration support
+TW_NO_HAPTICS := true
+
+# Battery
+TW_USE_LEGACY_BATTERY_SERVICES := true
+
+# Time
+TARGET_RECOVERY_QCOM_RTC_FIX := true
+
+# Statusbar icons flags
+TW_STATUS_ICONS_ALIGN := center
+TW_CUSTOM_CLOCK_POS := 50
+TW_CUSTOM_CPU_POS := 280
+TW_CUSTOM_BATTERY_POS := 790
+
+# Use our own USB config
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+
+# For mounting NTFS
+TW_INCLUDE_NTFS_3G := true
+
+# Use mke2fs for formatting ext4 partitions
+TARGET_USES_MKE2FS := true
+
+# Include magiskboot for repacking bootimg
+TW_INCLUDE_REPACKTOOLS := true
+
+# Kernel module loading for touch, battery etc
+TW_LOAD_VENDOR_MODULES := $(shell echo \"$(shell ls $(DEVICE_PATH)/recovery/root/vendor/lib/modules/1.1)\")
+TW_LOAD_VENDOR_BOOT_MODULES := true
+
+# Include decryption support
+TW_INCLUDE_CRYPTO := true
+RECOVERY_SDCARD_ON_DATA := true
+# include below when enabling decryption
+# without these it may stuck on TWRP splash
+TARGET_RECOVERY_DEVICE_MODULES += libion
+RECOVERY_LIBRARY_SOURCE_FILES += $(TARGET_OUT_SHARED_LIBRARIES)/libion.so
+
+# Don't mount apex files (no need for now)
+TW_EXCLUDE_APEX := true
+
+# Debuging flags
+TWRP_INCLUDE_LOGCAT := true
+TARGET_USES_LOGD := true
+TW_INCLUDE_RESETPROP := true

@@ -85,11 +85,18 @@ jobs:
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
         lunch twrp_hawao-eng
-        mka recoveryimage -j$(nproc)
+        mka bootimage -j$(nproc)
         
-    - name: Upload recovery image
+    - name: List built files
+      run: |
+        echo "=== Checking output directory ==="
+        ls -lh ~/twrp/out/target/product/hawao/*.img 2>/dev/null || echo "No .img files found"
+        echo "=== Full directory listing ==="
+        ls -lh ~/twrp/out/target/product/hawao/ 2>/dev/null || echo "Directory not found"
+        
+    - name: Upload boot image
       uses: actions/upload-artifact@v4
       with:
-        name: twrp-hawao-recovery
-        path: ~/twrp/out/target/product/hawao/recovery.img
+        name: twrp-hawao-boot
+        path: ~/twrp/out/target/product/hawao/boot.img
         retention-days: 30
